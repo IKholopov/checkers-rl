@@ -1,7 +1,7 @@
 import checkers_swig
 import numpy as np
 
-# A wrapper fixing some
+# A wrapper fixing some SWIG issues and calculating rewards
 
 class DefaultRewardCalculator:
     # returns two rewards - for white and black agent (w, b), w == -b
