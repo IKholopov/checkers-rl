@@ -29,6 +29,9 @@ public:
     void Reset(std::shared_ptr<IStrategy> white_strategy=nullptr, std::shared_ptr<IStrategy> black_strategy=nullptr,
                std::shared_ptr<GameState> start_state=nullptr, int max_steps = 10000);
     std::string Render();
+    bool IsDraw() const {
+        return game_->IsDraw();
+    }
     bool IsDone() const {
         return game_->IsFinished();
     }

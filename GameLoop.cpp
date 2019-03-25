@@ -65,6 +65,9 @@ std::shared_ptr<GameState> GameLoop::Step(std::shared_ptr<GameState> state) {
     }
 
     state_story_.push_back(state);
+    if (IsFinished()) {
+        return state_story_.back();
+    }
     switch (state->CurrentTeam) {
         case Team::White:
             if (white_strategy_ != nullptr) {

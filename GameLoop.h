@@ -17,6 +17,9 @@ public:
     bool IsFinished() const {
         return steps_ >= max_steps_ || state_story_.back()->IsTerminal();
     }
+    bool IsDraw() const {
+        return steps_ == max_steps_;
+    }
 
 private:
     int max_steps_ = 10000;

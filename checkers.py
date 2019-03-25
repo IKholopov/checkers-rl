@@ -21,7 +21,8 @@ class DefaultRewardCalculator:
         r += (new_queen_my - old_queen_my + old_queen_opp - new_queen_opp) * 10
         return np.array([r, -r] if team == checkers_swig.Team_White else [-r, r])
 
-
+    def draw_reward(self):
+        return np.array([-1000, -1000]);
 
 class CheckersAgent:
     def __init__(self, r_calculator= DefaultRewardCalculator()):
@@ -34,6 +35,10 @@ class CheckersAgent:
         reward = self.r_calculator.reward(old_state, action)
         self.env.Step(action)
         new_state = self.env.CurrentState()
+
+        if self.env.IsDraw():
+            return action, self.r_calculator.draw_reward(), True, {}
+
         if new_state != action:
             reward = self.r_calculator.reward(action, new_state)
         return new_state, reward, new_state.IsTerminal(), {}
