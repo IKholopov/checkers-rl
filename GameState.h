@@ -77,8 +77,7 @@ struct GameState {
     const GameState* Parent = nullptr;
     Team CurrentTeam;
 
-
-    GameState(Team team = Team::White) : CurrentTeam(team) {
+    explicit GameState(bool american, Team team = Team::White) : CurrentTeam(team), american_mode_(american) {
         for (int i = 0; i < BoardSize; ++i) {
             for (int j = 0; j < BoardSize; ++j) {
                 auto& pos = State[Index(i, j)];
@@ -97,16 +96,18 @@ struct GameState {
             }
         }
     }
-    GameState(const GameState* parent) : State(parent->State), Parent(parent), CurrentTeam(Opponent(parent->CurrentTeam)) {
+    GameState(const GameState* parent) : State(parent->State), Parent(parent), CurrentTeam(Opponent(parent->CurrentTeam)),
+        american_mode_(parent->american_mode_) {
     }
 
     GameState(const GameState&) = default;
     GameState(GameState&& other) {
         std::swap(other.State, State);
         CurrentTeam = other.CurrentTeam;
+        american_mode_ = other.american_mode_;
     }
 
-    static std::shared_ptr<GameState> CreateEmpty();
+    static std::shared_ptr<GameState> CreateEmpty(bool american);
 
     bool Equal(GameState& other) const {
         return State == other.State;
@@ -159,6 +160,7 @@ struct GameState {
     const std::vector<std::shared_ptr<GameState> >& Expand() const;
 
     void Dump(std::ostream& stream) const;
+    std::vector<CellStatus> StateValue() const;
 
     bool operator==(GameState& other) const {
         return other.State == State && other.CurrentTeam == CurrentTeam;
@@ -168,4 +170,5 @@ private:
     static const CellStatus forbidden = CellStatus::Forbidden;
     mutable std::vector<std::shared_ptr<GameState> > expansion;
     mutable bool cached_expansion_ = false;
+    bool american_mode_ = false;
 };

@@ -1,8 +1,8 @@
 #include <GameState.h>
 
-std::shared_ptr<GameState> GameState::CreateEmpty()
+std::shared_ptr<GameState> GameState::CreateEmpty(bool american)
 {
-    auto state = std::make_shared<GameState>();
+    auto state = std::make_shared<GameState>(american);
     for (int i = 0; i < BoardSize; ++i) {
         for (int j = 0; j < BoardSize; ++j) {
             state->Cell(i, j) = CellStatus::None;
@@ -99,6 +99,8 @@ std::vector<std::shared_ptr<GameState> > GameState::KillingMovesForRegular(int i
     assert(my_team != Team::None);
     assert(!IsQueen(State[Index(i, j)]));
     std::vector<std::shared_ptr<GameState>> children;
+    int dy_min = american_mode_ && my_team == Team::Black ? 0 : -1;
+    int dy_max = american_mode_ && my_team == Team::White ? 1 : 2;
     for (int dy = -1; dy < 2; dy += 2) {
         for (int dx = -1; dx < 2; dx += 2) {
             if (TeamOfCell(At(i + dy, j + dx)) == Opponent(my_team) &&
@@ -136,7 +138,7 @@ std::vector<std::shared_ptr<GameState> > GameState::NonKillingMovesForQueen(int 
     for (int dy = -1; dy < 2; dy += 2) {
         for (int dx = -1; dx < 2; dx += 2) {
             for (int a = 1;
-                 At(i + dy * a, j + dx * a) == CellStatus::None;
+                 At(i + dy * a, j + dx * a) == CellStatus::None && !(american_mode_ && a > 1);
                  a += 1)
             {
                 auto child = std::make_shared<GameState>(this);
@@ -198,7 +200,7 @@ std::vector<std::shared_ptr<GameState> > GameState::KillingMovesForQueen(int i, 
     for (int dy = -1; dy < 2; dy += 2) {
         for (int dx = -1; dx < 2; dx += 2) {
             for (int a = 1;
-                 At(i + dy * (a + 1), j + dx * (a + 1)) != CellStatus::Forbidden;
+                 At(i + dy * (a + 1), j + dx * (a + 1)) != CellStatus::Forbidden && !(american_mode_ && a > 1);
                  a += 1)
             {
                 if (TeamOfCell(At(i + dy * a, j + dx * a)) == Opponent(my_team) &&
@@ -260,4 +262,9 @@ void GameState::Dump(std::ostream& stream) const {
     }
     stream << std::endl;
     stream << std::endl;
+}
+
+std::vector<CellStatus> GameState::StateValue() const
+{
+    return std::vector<CellStatus>(State.begin(), State.end());
 }

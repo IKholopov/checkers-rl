@@ -28,6 +28,7 @@
 
 namespace std {
     %template(vector_gamestate) vector<shared_ptr<GameState>>;
+    %template(vector_cellstatus) vector<CellStatus>;
     %template(istrateg_ptr) shared_ptr<IStrategy>;
 }
 %include "Env.h"

@@ -1,7 +1,7 @@
 #include <Env.h>
 #include <sstream>
 
-CheckersEnv::CheckersEnv() : game_(std::make_unique<GameLoop>())
+CheckersEnv::CheckersEnv(bool american) : game_(std::make_unique<GameLoop>(american))
 {
 }
 
@@ -21,15 +21,20 @@ GameEnd CheckersEnv::Run(std::shared_ptr<IStrategy> white_strategy,
     return GameEnd{result.first, result.second};
 }
 
-void CheckersEnv::Reset(std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy,
+void CheckersEnv::Reset(bool american, std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy,
                         std::shared_ptr<GameState> start_state, int max_steps)
 {
-    game_ = std::make_unique<GameLoop>(white_strategy, black_strategy, start_state, max_steps);
+    game_ = std::make_unique<GameLoop>(american, white_strategy, black_strategy, start_state, max_steps);
 }
 
-std::string CheckersEnv::Render()
+std::string CheckersEnv::Render() const
 {
     std::stringstream stream;
     CurrentState()->Dump(stream);
     return stream.str();
+}
+
+std::vector<CellStatus> CheckersEnv::StateValue() const
+{
+    return CurrentState()->StateValue();
 }

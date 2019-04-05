@@ -1,13 +1,13 @@
 #include <GameLoop.h>
 
-GameLoop::GameLoop(std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy, std::shared_ptr<GameState> start_state, int max_steps)
+GameLoop::GameLoop(bool american, std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy, std::shared_ptr<GameState> start_state, int max_steps)
     : max_steps_(max_steps),
       white_strategy_(std::move(white_strategy)),
       black_strategy_(std::move(black_strategy)) {
     if (start_state != nullptr) {
         state_story_.emplace_back(start_state);
     } else {
-        state_story_.emplace_back(std::make_shared<GameState>());
+        state_story_.emplace_back(std::make_shared<GameState>(american));
     }
 }
 

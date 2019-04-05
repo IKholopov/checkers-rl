@@ -15,7 +15,7 @@ struct GameEnd {
 
 class CheckersEnv {
 public:
-    CheckersEnv();
+    explicit CheckersEnv(bool american = false);
 
     std::shared_ptr<GameState> Step(std::shared_ptr<GameState> action);
     std::vector<std::shared_ptr<GameState>> GetPossibleActions(std::shared_ptr<GameState> state) const {
@@ -26,9 +26,10 @@ public:
     }
     GameEnd Run(std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy,
                 bool verbose = false);
-    void Reset(std::shared_ptr<IStrategy> white_strategy=nullptr, std::shared_ptr<IStrategy> black_strategy=nullptr,
+    void Reset(bool american = false, std::shared_ptr<IStrategy> white_strategy=nullptr, std::shared_ptr<IStrategy> black_strategy=nullptr,
                std::shared_ptr<GameState> start_state=nullptr, int max_steps = 10000);
-    std::string Render();
+    std::string Render() const;
+    std::vector<CellStatus> StateValue() const;
     bool IsDraw() const {
         return game_->IsDraw();
     }

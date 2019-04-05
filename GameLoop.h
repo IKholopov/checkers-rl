@@ -3,7 +3,7 @@
 
 class GameLoop {
 public:
-    GameLoop(std::shared_ptr<IStrategy> white_strategy=nullptr, std::shared_ptr<IStrategy> black_strategy=nullptr,
+    GameLoop(bool american = false, std::shared_ptr<IStrategy> white_strategy=nullptr, std::shared_ptr<IStrategy> black_strategy=nullptr,
              std::shared_ptr<GameState> start_state=nullptr, int max_steps = 10000);
 
     std::pair<Winner, std::vector<std::shared_ptr<GameState> > > EvaluateGame(bool verbose=false);
