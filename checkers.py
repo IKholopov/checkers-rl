@@ -9,7 +9,7 @@ class DefaultRewardCalculator:
         team = old_state.CurrentTeam
         opponent = checkers_swig.Opponent(team)
         if new_state.IsTerminal():
-            r = 10000
+            r = self.win_reward()
             return np.array([r, -r] if team == checkers_swig.Team_White else [-r, r])
         old_regular_opp = old_state.RegularChecks(opponent)
         new_regular_opp = new_state.RegularChecks(opponent)
@@ -22,7 +22,10 @@ class DefaultRewardCalculator:
         return np.array([r, -r] if team == checkers_swig.Team_White else [-r, r])
 
     def draw_reward(self):
-        return np.array([-1000, -1000]);
+        return np.array([-1000, -1000])
+
+    def win_reward(self):
+        return 10000
 
 
 class CheckersEnvironment:
@@ -32,6 +35,7 @@ class CheckersEnvironment:
 
     def step(self, action):
         old_state = self.env.CurrentState()
+        action = self.possible_actions(old_state)[action]
         assert action.CurrentTeam != old_state.CurrentTeam, 'Not a valid action'
         reward = self.r_calculator.reward(old_state, action)
         self.env.Step(action)
