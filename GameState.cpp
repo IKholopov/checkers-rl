@@ -99,9 +99,9 @@ std::vector<std::shared_ptr<GameState> > GameState::KillingMovesForRegular(int i
     assert(my_team != Team::None);
     assert(!IsQueen(State[Index(i, j)]));
     std::vector<std::shared_ptr<GameState>> children;
-    int dy_min = american_mode_ && my_team == Team::Black ? 0 : -1;
+    int dy_min = american_mode_ && my_team == Team::Black ? 1 : -1;
     int dy_max = american_mode_ && my_team == Team::White ? 1 : 2;
-    for (int dy = -1; dy < 2; dy += 2) {
+    for (int dy = dy_min; dy < dy_max; dy += 2) {
         for (int dx = -1; dx < 2; dx += 2) {
             if (TeamOfCell(At(i + dy, j + dx)) == Opponent(my_team) &&
                     At(i + dy * 2, j + dx * 2) == CellStatus::None)
