@@ -18,14 +18,14 @@ class DefaultRewardCalculator:
         new_queen_my = new_state.QueenChecks(team)
         old_queen_opp = old_state.QueenChecks(opponent)
         new_queen_opp = new_state.QueenChecks(opponent)
-        r += (new_queen_my - old_queen_my + old_queen_opp - new_queen_opp) * 10
+        r += (new_queen_my - old_queen_my + old_queen_opp - new_queen_opp) * 4
         return np.array([r, -r] if team == checkers_swig.Team_White else [-r, r])
 
     def draw_reward(self):
-        return np.array([-1000, -1000])
+        return np.array([-self.win_reward() / 2, -self.win_reward() / 2])
 
     def win_reward(self):
-        return 10000
+        return 50
 
 
 class CheckersEnvironment:
