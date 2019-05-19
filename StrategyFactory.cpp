@@ -3,6 +3,7 @@
 #include <RandomStrategy.h>
 #include <MinMaxStrategy.h>
 #include <MCSTStrategy.h>
+#include <QNNStrategy.h>
 
 static int CheckersRate(std::shared_ptr<const GameState> state) {
     int rate = 0;
@@ -85,6 +86,11 @@ std::shared_ptr<IStrategy> MakeMCSTStrategy(Team team, int max_iterations)
     } else {
         return std::make_shared<WeightedMCST<Team::Black> >(max_iterations);
     }
+}
+
+std::shared_ptr<IStrategy> MakeQNNStrategy(Team team, const std::string& path)
+{
+    return std::make_shared<QnnStrategy>(path, team);
 }
 
 }

@@ -1,5 +1,6 @@
 #include <Env.h>
 #include <sstream>
+#include <thread>
 
 CheckersEnv::CheckersEnv(bool american) : game_(std::make_unique<GameLoop>(american))
 {
@@ -24,6 +25,7 @@ GameEnd CheckersEnv::Run(std::shared_ptr<IStrategy> white_strategy,
 void CheckersEnv::Reset(bool american, std::shared_ptr<IStrategy> white_strategy, std::shared_ptr<IStrategy> black_strategy,
                         std::shared_ptr<GameState> start_state, int max_steps)
 {
+    // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     game_ = std::make_unique<GameLoop>(american, white_strategy, black_strategy, start_state, max_steps);
 }
 

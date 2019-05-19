@@ -16,8 +16,8 @@
 %include "std_shared_ptr.i"
 %include <std_string.i>
 
-%shared_ptr(GameState)
 %shared_ptr(CheckersEnv)
+%shared_ptr(GameState)
 
 %include "cpointer.i"
 %include "std_vector.i"
@@ -27,7 +27,7 @@
 %include "GameState.h"
 
 namespace std {
-    %template(vector_gamestate) vector<shared_ptr<GameState>>;
+    %template(vector_gamestate) std::vector<std::shared_ptr<GameState>>;
     %template(vector_cellstatus) vector<CellStatus>;
     %template(istrateg_ptr) shared_ptr<IStrategy>;
 }

@@ -5,9 +5,9 @@ GameLoop::GameLoop(bool american, std::shared_ptr<IStrategy> white_strategy, std
       white_strategy_(std::move(white_strategy)),
       black_strategy_(std::move(black_strategy)) {
     if (start_state != nullptr) {
-        state_story_.emplace_back(start_state);
+        state_story_.emplace_back(start_state->Detach());
     } else {
-        state_story_.emplace_back(std::make_shared<GameState>(american));
+        state_story_.emplace_back(std::make_shared<GameState>(american)->Detach());
     }
 }
 
@@ -23,13 +23,14 @@ std::pair<Winner, std::vector<std::shared_ptr<GameState> > > GameLoop::EvaluateG
         if (verbose) {
             last_state->Dump(std::cerr);
         }
+        ++steps_;
         switch (last_state->CurrentTeam) {
         case Team::Black: {
-            state_story_.emplace_back(black_strategy_->ChooseNextState(last_state));
+            state_story_.emplace_back(black_strategy_->ChooseNextState(last_state)->Detach());
             break;
         }
         case Team::White: {
-            state_story_.emplace_back(white_strategy_->ChooseNextState(last_state));
+            state_story_.emplace_back(white_strategy_->ChooseNextState(last_state)->Detach());
             break;
         }
         case Team::None: {
@@ -64,19 +65,19 @@ std::shared_ptr<GameState> GameLoop::Step(std::shared_ptr<GameState> state) {
         throw std::runtime_error("invalid state passed into GameLoop::Step()");
     }
 
-    state_story_.push_back(state);
+    state_story_.push_back(state->Detach());
     if (IsFinished()) {
         return state_story_.back();
     }
     switch (state->CurrentTeam) {
         case Team::White:
             if (white_strategy_ != nullptr) {
-                state_story_.push_back(white_strategy_->ChooseNextState(state));
+                state_story_.push_back(white_strategy_->ChooseNextState(state)->Detach());
             }
             break;
         case Team::Black:
             if (black_strategy_ != nullptr) {
-                state_story_.push_back(black_strategy_->ChooseNextState(state));
+                state_story_.push_back(black_strategy_->ChooseNextState(state)->Detach());
             }
             break;
         case Team::None:

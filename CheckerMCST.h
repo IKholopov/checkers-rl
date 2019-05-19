@@ -42,7 +42,7 @@ public:
 
     int Simulate(std::shared_ptr<GameState> state) {
         assert(state != nullptr);
-        auto children = state->Expand();
+        auto children = state->ExpandDetached();
         if (state->IsTerminal() || children.empty()) {
             return Score(state.get());
         }
