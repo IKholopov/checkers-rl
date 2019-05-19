@@ -192,6 +192,16 @@ const std::vector<std::shared_ptr<GameState> >& GameState::Expand() const {
     return expansion;
 }
 
+std::vector<std::shared_ptr<GameState>> GameState::ExpandDetached() const
+{
+    std::vector<std::shared_ptr<GameState>> expanded;
+    const auto& exp = Expand();
+    for (const auto& state : exp) {
+        expanded.emplace_back(state->Detach());
+    }
+    return expanded;
+}
+
 std::vector<std::shared_ptr<GameState> > GameState::KillingMovesForQueen(int i, int j) const {
     Team my_team = TeamOfCell(State[Index(i, j)]);
     assert(my_team != Team::None);

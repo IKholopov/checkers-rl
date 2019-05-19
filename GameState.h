@@ -107,6 +107,13 @@ struct GameState {
         american_mode_ = other.american_mode_;
     }
 
+    std::shared_ptr<GameState> Detach() const {
+        auto copy = CreateEmpty(this->american_mode_);
+        copy->State = State;
+        copy->CurrentTeam = CurrentTeam;
+        return copy;
+    }
+
     static std::shared_ptr<GameState> CreateEmpty(bool american);
 
     bool Equal(GameState& other) const {
@@ -158,6 +165,7 @@ struct GameState {
     std::vector<std::shared_ptr<GameState> > NonKillingMovesForRegular(int i, int j) const;
 
     const std::vector<std::shared_ptr<GameState> >& Expand() const;
+    std::vector<std::shared_ptr<GameState> > ExpandDetached() const;
 
     void Dump(std::ostream& stream) const;
     std::vector<CellStatus> StateValue() const;

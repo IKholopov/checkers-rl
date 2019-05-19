@@ -40,9 +40,12 @@ class PreprocessedCheckers(checkers.CheckersEnvironment):
         
         return normalized
 
-def make_env(american=True):
-    env = PreprocessedCheckers(american)
-    opts = dict(american=american, black_strategy=checkers.checkers_swig.MakeRandomStrategy())
+def make_opts():
+    return dict(american=True, black_strategy=checkers_swig.MakeMCSTStrategy(checkers_swig.Team_Black, 100))
+
+def make_env():
+    opts = make_opts()
+    env = PreprocessedCheckers(opts['american'])
     env.reset(**opts)
     return env, opts
 
@@ -131,11 +134,11 @@ class DQNAgent(nn.Module):
         return np.where(should_explore, random_actions, best_actions)
 
 
-def evaluate(env, opts, agent, n_games=1, greedy=False, t_max=10000):
+def evaluate(env, agent, n_games=1, greedy=False, t_max=10000):
     """ Plays n_games full games. If greedy, picks actions as argmax(qvalues). Returns mean reward. """
     rewards = []
     for _ in range(n_games):
-        env.reset(**opts)
+        env.reset(**make_opts())
         s = env.observation()
         reward = 0
         for _ in range(t_max):
@@ -220,7 +223,7 @@ class ReplayBuffer(object):
 
         return np.array(states), np.array(actions), np.array(rewards), np.array(next_states), np.array(next_actions), np.array(dones)
 
-def play_and_record(initial_state, agent, env, opts, exp_replay, n_steps=1):
+def play_and_record(initial_state, agent, env, exp_replay, n_steps=1):
     """
     Play the game for exactly n steps, record every (s,a,r,s', done) to replay buffer. 
     Whenever game ends, add record with done=True and reset the game.
@@ -245,7 +248,7 @@ def play_and_record(initial_state, agent, env, opts, exp_replay, n_steps=1):
         s = next_s
         sum_rewards += r
         if done:
-            env.reset(**opts)
+            env.reset(**make_opts())
             s = env.observation()
 
     return sum_rewards, s
@@ -349,11 +352,12 @@ random.seed(seed)
 np.random.seed(seed)
 torch.manual_seed(seed)
 
-env, opts = make_env(True)
+env, opts = make_env()
 state_shape = (2, 8, 8)
 state = env.observation()
 
 agent = DQNAgent(state_shape, epsilon=1).to(device)
+agent.load_state_dict(torch.load("atari-0.4645.pt"))
 # В процессе были падения, но модель сохранилась
 target_network = DQNAgent(state_shape).to(device)
 target_network.load_state_dict(agent.state_dict())
@@ -362,10 +366,10 @@ target_network.load_state_dict(agent.state_dict())
 # Buffer of size $10^4$ fits into 5 Gb RAM.
 # 
 # Larger sizes ($10^5$ and $10^6$ are common) can be used. It can improve the learning, but $10^4$ is quiet enough. $10^2$ will probably fail learning.
-buf_size = 10**5
+buf_size = 10**4
 print('Heating up replay buffer of size {}'.format(buf_size))
 exp_replay = ReplayBuffer(buf_size)
-for i in range(1000):
+for i in range(100):
     if not utils.is_enough_ram(min_available_gb=0.1):
         print("""
             Less than 100 Mb RAM available. 
@@ -374,7 +378,7 @@ for i in range(1000):
             """
              )
         break
-    play_and_record(state, agent, env, opts, exp_replay, n_steps=10**2)
+    play_and_record(state, agent, env, exp_replay, n_steps=10**2)
     if len(exp_replay) == buf_size:
         break
 print('Finished: {} plays'.format(len(exp_replay)))
@@ -386,7 +390,7 @@ decay_steps = 10**6
 
 opt = torch.optim.Adam(agent.parameters(), lr=1e-4)
 
-init_epsilon = 1
+init_epsilon = 0.4645
 final_epsilon = 0.1
 
 loss_freq = 50
@@ -408,13 +412,13 @@ initial_state_v_history = []
 
 
 writer = SummaryWriter('runs/qLearning' +  strftime('%a%d%b%Y%H%M%S', gmtime()))
-env.reset(**opts)
+env.reset(**make_opts())
 state = env.observation()
 for step in trange(total_steps + 1):
     agent.epsilon = utils.linear_decay(init_epsilon, final_epsilon, step, decay_steps)
 
     # play
-    _, state = play_and_record(state, agent, env, opts, exp_replay, timesteps_per_epoch)
+    _, state = play_and_record(state, agent, env, exp_replay, timesteps_per_epoch)
 
     # train
     batch_s, batch_a, batch_r, batch_ns, batch_na, batch_done = exp_replay.sample(batch_size) # < sample batch_size of data from experience replay >
@@ -437,9 +441,9 @@ for step in trange(total_steps + 1):
     if step % eval_freq == 0:
         torch.save(agent.state_dict(), 'atari' + str(step) + '.pt')
         mean_rw_history.append(evaluate(
-            make_env(True)[0], opts, agent, n_games=3 * n_lives, greedy=True)
+            make_env()[0], agent, n_games=3 * n_lives, greedy=True)
         )
-        e = make_env(True)[0]
+        e = make_env()[0]
         initial_state_q_values = agent.get_qvalues(
             [e.observation()], [e.current_possible_actions_values()]
         )

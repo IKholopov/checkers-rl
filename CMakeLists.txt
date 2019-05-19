@@ -10,18 +10,22 @@ file(GLOB CheckersAI_SWIG_SRC
     "*.i"
 )
 
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CMAKE_SOURCE_DIR}/libtorch/share/cmake/Torch/" "${CMAKE_SOURCE_DIR}/libtorch/share/cmake/Caffee2/")
+
 set(CheckersAI_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "Checkers-ai include directories")
 set(CMAKE_CXX_STANDARD 17)
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 find_package(SWIG REQUIRED)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
+find_package(Torch REQUIRED)
 
 include(${SWIG_USE_FILE})
 
 add_library( checkers_ai ${CheckersAI_SRC} )
 set_property(TARGET checkers_ai PROPERTY POSITION_INDEPENDENT_CODE ON)
-target_include_directories(checkers_ai PUBLIC ${CheckersAI_DIR})
+target_include_directories(checkers_ai PUBLIC ${CheckersAI_DIR} ${TORCH_INCLUDE_DIRS})
+target_link_libraries(checkers_ai torch)
 
 SET(CMAKE_SWIG_FLAGS "")
 
@@ -29,7 +33,7 @@ set_property(SOURCE ${CheckersAI_SWIG_SRC} PROPERTY CPLUSPLUS ON USE_LIBRARY_INC
                                                     COMPILE_OPTIONS py3)
 swig_add_library( checkers_swig TYPE SHARED LANGUAGE python SOURCES ${CheckersAI_SWIG_SRC})
 target_include_directories( checkers_swig PUBLIC ${Python_INCLUDE_DIRS} ${CheckersAI_DIR} )
-target_link_libraries(checkers_swig PUBLIC checkers_ai)
+target_link_libraries(checkers_swig PUBLIC checkers_ai torch)
 set_property(TARGET checkers_swig PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
 set_property(TARGET checkers_swig PROPERTY SWIG_GENERATED_INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS})
 set_property(TARGET checkers_swig PROPERTY SWIG_INCLUDE_DIRECTORIES ${Python_INCLUDE_DIRS})
@@ -38,7 +42,14 @@ set_property(TARGET checkers_swig PROPERTY GENERATED_INCLUDE_DIRECTORIES ${Pytho
 file(GLOB CheckersAI_Py
     "*.py"
 )
+
 foreach(py_src ${CheckersAI_Py})
     get_filename_component(py_name ${py_src} NAME)
     configure_file(${py_src} ${CMAKE_CURRENT_BINARY_DIR}/${shader_name})
 endforeach(py_src)
+
+file(GLOB CheckersAI_Blobs
+    "*.trpt"
+)
+
+file(COPY ${CheckersAI_Blobs} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

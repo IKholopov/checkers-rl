@@ -19,7 +19,7 @@ public:
 
     std::shared_ptr<GameState> Step(std::shared_ptr<GameState> action);
     std::vector<std::shared_ptr<GameState>> GetPossibleActions(std::shared_ptr<GameState> state) const {
-        return state->Expand();
+        return state->ExpandDetached();
     }
     std::shared_ptr<GameState> CurrentState() const {
         return game_->CurrentState();
