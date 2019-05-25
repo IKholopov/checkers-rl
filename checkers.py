@@ -22,10 +22,10 @@ class DefaultRewardCalculator:
         return np.array([r, -r] if team == checkers_swig.Team_White else [-r, r])
 
     def draw_reward(self):
-        return np.array([-self.win_reward() / 2, -self.win_reward() / 2])
+        return np.array([-self.win_reward(), -self.win_reward()])
 
     def win_reward(self):
-        return 50
+        return 100
 
 
 class CheckersEnvironment:
