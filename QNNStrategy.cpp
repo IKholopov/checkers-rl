@@ -1,4 +1,4 @@
-#include <assert.h>
+п»ї#include <assert.h>
 #include <QNNStrategy.h>
 
 float QnnStrategy::Normalized(CellStatus status) {
@@ -59,7 +59,7 @@ std::shared_ptr<GameState> QnnStrategy::ChooseNextState(std::shared_ptr<GameStat
     auto result = module->forward(inputs).toTensor();
 #ifdef UI
     const int64_t index = *result.argmax().data<int64_t>();
-#else  // Под виндой ругается матом, что не может слинковать. 
+#else  // РџРѕРґ РІРёРЅРґРѕР№ СЂСѓРіР°РµС‚СЃСЏ РјР°С‚РѕРј, С‡С‚Рѕ РЅРµ РјРѕР¶РµС‚ СЃР»РёРЅРєРѕРІР°С‚СЊ.
 	const long index = *result.argmax().data<long>();
 #endif // UI
     assert(index >= 0 && index < actions.size());
