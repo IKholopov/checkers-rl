@@ -51,6 +51,12 @@
     <ClCompile Include="..\..\..\MinMaxStrategy.cpp">
       <Filter>AI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\A2CStrategy.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\NNStrategy.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -96,6 +102,12 @@
       <Filter>AI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\RandomStrategy.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\A2CStrategy.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NNStrategy.h">
       <Filter>AI</Filter>
     </ClInclude>
   </ItemGroup>

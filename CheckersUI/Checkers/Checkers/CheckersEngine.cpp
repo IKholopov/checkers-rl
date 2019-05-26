@@ -16,7 +16,8 @@ CCheckersEngine::CCheckersEngine( CBoard& _board )
 	, isWhiteTurn( true )
 	, result( GR_StillPlaying )
 {
-	opponentStrategy = Strategy::MakeQNNStrategy( Team::Black, "C:\\Users\\Nikolay\\checkers-rl\\CheckpointMinMax.trpt" );
+	// opponentStrategy = Strategy::MakeA2CStrategy( Team::White, "..\\..\\..\\a2c_many.trpt", true );
+	opponentStrategy = Strategy::MakeQNNStrategy( Team::White, "..\\..\\..\\CheckpointMinMax.trpt" );
 }
 
 void CCheckersEngine::StartGame()

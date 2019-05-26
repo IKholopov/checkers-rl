@@ -136,8 +136,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\A2CStrategy.cpp" />
     <ClCompile Include="..\..\..\GameState.cpp" />
     <ClCompile Include="..\..\..\MinMaxStrategy.cpp" />
+    <ClCompile Include="..\..\..\NNStrategy.cpp" />
     <ClCompile Include="..\..\..\QNNStrategy.cpp" />
     <ClCompile Include="..\..\..\StrategyFactory.cpp" />
     <ClCompile Include="Board.cpp" />
@@ -149,9 +151,11 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\A2CStrategy.h" />
     <ClInclude Include="..\..\..\GameState.h" />
     <ClInclude Include="..\..\..\MCSTStrategy.h" />
     <ClInclude Include="..\..\..\MinMaxStrategy.h" />
+    <ClInclude Include="..\..\..\NNStrategy.h" />
     <ClInclude Include="..\..\..\QNNStrategy.h" />
     <ClInclude Include="..\..\..\RandomStrategy.h" />
     <ClInclude Include="..\..\..\Strategy.h" />
