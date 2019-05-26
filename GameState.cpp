@@ -1,4 +1,5 @@
 #include <GameState.h>
+#include <string>
 
 std::shared_ptr<GameState> GameState::CreateEmpty(bool american)
 {

@@ -57,7 +57,11 @@ std::shared_ptr<GameState> QnnStrategy::ChooseNextState(std::shared_ptr<GameStat
     std::vector<torch::jit::IValue> inputs;
     inputs.push_back(tensor);
     auto result = module->forward(inputs).toTensor();
-    const long index = *result.argmax().data<long>();
+#ifdef UI
+    const int64_t index = *result.argmax().data<int64_t>();
+#else  // ѕод виндой ругаетс€ матом, что не может слинковать. 
+	const long index = *result.argmax().data<long>();
+#endif // UI
     assert(index >= 0 && index < actions.size());
     return actions[index];
 }

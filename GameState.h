@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <assert.h>
+#include <array>
 
 constexpr const int BoardSize = 8;
 constexpr const int BoardCells = BoardSize * BoardSize;
