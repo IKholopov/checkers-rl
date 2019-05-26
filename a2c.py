@@ -5,7 +5,8 @@ import torch.nn.functional as F
 from tqdm import trange
 
 from checkers import CheckersEnvironment
-from checkers_swig import MakeRandomStrategy, MakeMinMaxStrategy, MakeQNNStrategy, Team_Black, Team_White
+import checkers_swig
+from checkers_swig import MakeRandomStrategy, MakeMinMaxStrategy, MakeMCSTStrategy, MakeQNNStrategy,  MakeA2CStrategy, Team_Black, Team_White
 from env_pool import EnvPool
 
 def make_qnn_strategy(path):
@@ -19,7 +20,7 @@ class CheckersEnvWrapper(CheckersEnvironment):
     def reset(self, make_strat=None):
         if make_strat is not None:
             self.make_strat = make_strat
-        super(CheckersEnvWrapper, self).reset(american=True, max_steps=200, 
+        super(CheckersEnvWrapper, self).reset(american=True, max_steps=1000,
                                                  black_strategy=self.make_strat())
         
     def _observation(self, img):
@@ -32,14 +33,23 @@ class CheckersEnvWrapper(CheckersEnvironment):
         
         return normalized
         
+def make_strat(path):
+    if path == 'rand':
+        return lambda: checkers_swig.MakeRandomStrategy(np.random.randint(1000000))
+    elif path[:6] == 'minmax':
+        return lambda: checkers_swig.MakeMinMaxStrategy(int(path.split('_')[1]))
+    elif path[:4] == 'mcst':
+        if path[:9] == 'mcst_rand':
+            return lambda: checkers_swig.MakeMCSTStrategy(checkers_swig.Team_Black, np.random.randint(10, 500))
+        return lambda: checkers_swig.MakeMCSTStrategy(checkers_swig.Team_Black, int(path.split('_')[1]))
+    elif path[:3] == 'qnn':
+        return lambda: checkers_swig.MakeQNNStrategy(checkers_swig.Team_Black, path)
+    elif path[:3] == 'a2c':
+        return lambda: checkers_swig.MakeA2CStrategy(checkers_swig.Team_Black, path, True)
+    assert False, 'invalid strat'
 
 def make_env(path):
-    if path == 'rand':
-        env = CheckersEnvWrapper(lambda: MakeRandomStrategy(np.random.randint(1000000)))
-    elif path == 'minmax':
-        env = CheckersEnvWrapper(lambda: MakeMinMaxStrategy(5))
-    elif path[:3] == 'qnn':
-        env = CheckersEnvWrapper(lambda: MakeQNNStrategy(Team_Black, path))
+    env = CheckersEnvWrapper(make_strat(path))
     env.reset()
     return env
 
