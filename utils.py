@@ -6,10 +6,6 @@ from torch import nn
 import os
 
 def get_cum_discounted_rewards(rewards, gamma):
-    """
-    evaluates cumulative discounted rewards:
-    r_t + gamma * r_{t+1} + gamma^2 * r_{t_2} + ...
-    """
     cum_rewards = []
     cum_rewards.append(rewards[-1])
     for r in reversed(rewards[:-1]):
@@ -62,10 +58,6 @@ def play_and_log_episode(env, agent, gamma=0.99, t_max=10000):
 
 
 def img_by_obs(obs, state_dim):
-    """
-    Unwraps obs by channels.
-    observation is of shape [c, h=w, w=h]
-    """
     return obs.reshape([-1, state_dim[2]])
 
 
@@ -82,6 +74,5 @@ def linear_decay(init_val, final_val, cur_step, total_steps):
 
 def smoothen(values):
     kernel = gaussian(100, std=100)
-    # kernel = np.concatenate([np.arange(100), np.arange(99, -1, -1)])
     kernel = kernel / np.sum(kernel)
     return convolve(values, kernel, 'valid')
